@@ -7,6 +7,5 @@
 
 # Geometry
 
-![](Geometry1.png)
+![](Geometry.png)
 
-![](Geometry2.png)
