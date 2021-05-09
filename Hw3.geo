@@ -46,7 +46,7 @@ Physical Surface("5mm") = {2, 3};
 //+
 Physical Surface("4mm") = {1};
 //+
-Transfinite Curve {11} = 50 Using Progression 1;
+Transfinite Curve {11} = 5 Using Progression 1;
 
 //+
 //Extrude {0, 0, 0.2} {
