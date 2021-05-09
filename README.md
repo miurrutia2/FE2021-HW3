@@ -9,3 +9,13 @@
 
 ![](Geometry.png)
 
+
+# Displacements
+
+![](Desplazamientos.png)
+
+
+# Sigma X
+
+![](SigmaX.png)
+
