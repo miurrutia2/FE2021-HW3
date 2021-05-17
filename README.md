@@ -12,6 +12,9 @@
 # New Mesh
 ![](New_mesh.png)
 
+
+![](Deformada.png)
+
 # Displacements
 
 ![](Desplazamientos.png)
