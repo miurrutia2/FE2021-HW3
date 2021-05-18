@@ -31,9 +31,17 @@ To calculate the stresses, extrapolation from Gauss Points was used, in this met
 
 First, the natural coordinates of each element were obtained, these being:
 
+![](Part2/Image/Natural_coordinates.png)
 
+Once these coordinates are obtained, we can obtain N1, N2, N3 and N4, using the following equations:
 
+![](Part2/Image/Ns.png)
 
+With these values, we can assemble the matrix N of 4x4, which is as follows.
+
+![](Part2/Image/N.png)
+
+Finally, the equation ω = N∙ω' will be used, where ω' is equal to (σxx,σyy,σxy,εxy), previously calculated.
 
 ## Coarse mesh stress
 ![](Part2/plots/Coarse.png)
