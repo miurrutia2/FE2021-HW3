@@ -27,6 +27,13 @@
 
 # PART 2
 
+To calculate the stresses, extrapolation from Gauss Points was used, in this method the stresses at the Gauss points are evaluated and then extrapolated to the corners of the quadrilateral element where the nodes are.
+
+First, the natural coordinates of each element were obtained, these being:
+
+
+
+
 
 ## Coarse mesh stress
 ![](Part2/plots/Coarse.png)
