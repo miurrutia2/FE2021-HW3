@@ -27,6 +27,7 @@
 
 # PART 2
 
+
 ## Coarse mesh stress
 ![](Part2/plots/Coarse.png)
 
