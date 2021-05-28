@@ -5,7 +5,8 @@ from scipy.linalg import solve
 from stress_averaging import stress_averaging
 
 
-fid = open("Hw3_fine.msh", "r")
+
+fid = open("Hw3_medium.msh", "r")
 
 LINE_ELEMENT = 1
 QUAD_ELEMENT = 3
@@ -46,6 +47,8 @@ fixed_nodes = []
 Nquads = 0
 
 Quadrangles = []
+natural_nodes = []
+
 T = []
 
 for i in range(Nelem):
@@ -69,12 +72,16 @@ for i in range(Nelem):
 		n2 = int32(sl[7])-1
 		n3 = int32(sl[8])-1
 
+
 		conec[element_number, :] = [n0, n1, n2, n3]
 
 		Quadrangles.append(element_number)
 		Nquads += 1
 
-	
+	if element_type == LINE_ELEMENT and physical_grp == BordeNatural:
+		n1 = int32(sl[5])-1
+		n2 = int32(sl[6])-1
+		natural_nodes += [[n1, n2]]
 
 fid.close()
 
@@ -106,11 +113,10 @@ for e in Quadrangles:
 
 	xy_e = xy[[ni, nj, nk, nl], :]
 
-	if e in range(1760,2145):
+	if e in range(1,17) or range(448,545):
 		properties["t"] = 5e-3
 	else:
 		properties["t"] = 4e-3
-
 	
 	#print(xy_e)
 
@@ -140,7 +146,7 @@ print(f"cons = {constrained_DOFs}")
 free_DOFs = arange(NDOFs)
 free_DOFs = setdiff1d(free_DOFs, constrained_DOFs)
 
-nodes = [19-1, 34-1,26-1,33-1,22-1,32-1,25-1,31-1,21-1,30-1,24-1,29-1,20-21,28-1,23-1,27-1,18-1]
+nodes = [7-1,8-1,23-1,24-1,25-1]
 
 for n in nodes:
 	f[2*n] = 1.0
@@ -150,7 +156,49 @@ Kfc = K[ix_(free_DOFs,constrained_DOFs)]
 Kcf = K[ix_(constrained_DOFs,free_DOFs)]
 Kcc = K[ix_(constrained_DOFs,constrained_DOFs)]
 
+properties_load = {}
+properties_load["t"] = 5
+properties_load["tx"] = 1e3/(properties_load["t"]*4) #(kN/m)/H -> kN/()
+properties_load["ty"] = 0
 
+#LINE LOAD (Area tributaria) https://concretusblog.files.wordpress.com/2017/06/capc3adtulo-2-anc3a1lisis-de-cargas.pdf
+
+for nn in natural_nodes:
+	ni = nn[0]
+	nj = nn[1]
+
+	xy_e = xy[[ni,nj], :]
+	
+	xi =xy[ni,:]
+	xj =xy[nj,:]
+
+	x0 = xi[0]
+	y0 = xi[1]
+	x1 = xj[0]
+	y1 = xj[1]
+
+	fe = []
+
+	l = sqrt((x0-x1)**2 + (y0-y1)**2) #mm
+	lm = l	#m
+	
+	for i in range(4):
+		
+		if i == 1 or i == 3:
+			w = properties_load["ty"]
+			
+		else:
+			w = properties_load["tx"]
+
+		t = properties_load["t"] #mm
+		
+		tm = t
+		fe.append((properties_load["t"]*w*lm*0.5))
+		
+	d = [2*ni,2*ni+1,2*nj,2*nj+1]
+	for i in range(4):
+		p=d[i]
+		f[p]+=fe[i]
 
 ff= f[free_DOFs]
 fc = f[constrained_DOFs]
@@ -188,9 +236,9 @@ plt.axis("equal")
 from gmsh_post import write_node_data, write_node_data_2, write_element_data
 
 nodes = arange(1,Nnodes+1)
-write_node_data("ux.msh", nodes, uv[:,0], "Despl. X")
-write_node_data("uy.msh", nodes, uv[:,1], "Despl. Y")
-write_node_data_2("desplazamientos.msh", nodes, uv[:,0], uv[:,1], "Despl")
+write_node_data("post/medium/ux_medium.msh", nodes, uv[:,0], "Despl. X")
+write_node_data("post/medium/uy_medium.msh", nodes, uv[:,1], "Despl. Y")
+write_node_data_2("post/medium/desplazamientos_medium.msh", nodes, uv[:,0], uv[:,1], "Despl")
 
 
 i = 0
@@ -217,7 +265,6 @@ for e in Quadrangles:
 	σyy[i] = σe[1]
 	σxy[i] = σe[2]
 
-
 	ωp = [σe[0], σe[1], σe[2], εe[2]]
 
 	N = stress_averaging(xy, properties)
@@ -230,7 +277,5 @@ for e in Quadrangles:
 
 
 elementos = array(Quadrangles)+1
-write_element_data("sigma_x_fine.msh", elementos, σxx, "Sigma_x")
-write_element_data("new_sigma_x_fine.msh", elementos, new_σxx, "New_Sigma_x")
-
-	
+write_element_data("post/medium/sigma_x_medium.msh", elementos, σxx, "Sigma_x")
+write_element_data("post/medium/new_sigma_x_medium.msh", elementos, new_σxx, "New_Sigma_x")
